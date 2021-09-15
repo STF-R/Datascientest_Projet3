@@ -1,0 +1,5 @@
+FROM python
+ADD collection_wine_test.py requirements.txt ./
+RUN apt update && apt install python3-pip libmysqlclient-dev -y && pip install -r requirements.txt
+WORKDIR .
+CMD python3 collection_wine_test.py
