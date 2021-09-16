@@ -16,5 +16,11 @@ services:
     pymongo:
         image: sdereynal/image_pymongo:latest
         container_name: pymongo_from_compose
+    mongo_flaskapi:
+        image: sdereynal/mongo_flaskapi:latest
+        container_name: flaskapi_from_compose
+        ports:
+            - 5000:5000
+
  
 

@@ -1,5 +1,1 @@
-Flask
-flask_httpauth
 pymongo
-Requests
-
