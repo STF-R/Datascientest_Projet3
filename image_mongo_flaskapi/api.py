@@ -12,6 +12,32 @@ import time
 from pprint import pprint
 
 time.sleep(12)
+
+##fonctions utiles
+def results():
+    client = MongoClient(
+        host='mongodb',
+        port=27017,
+        username='data_user',
+        password='data_pwd',
+        authSource='wine'
+    )
+    db = client['wine']
+    col = db['wine_test']
+    country = request.args.get('country', default = {'$exists': True}, type = str)
+    points = request.args.get('points', default = {'$exists': True}, type = str)
+    taster_name = request.args.get('taster_name', default = {'$exists': True}, type = str)
+    taster_twitter_handle = request.args.get('taster_twitter_handle', default = {'$exists': True}, type = str)
+    price = request.args.get('price', default = {'$exists': True}, type = str)
+    designation = request.args.get('designation', default = {'$exists': True}, type = str)
+    variety = request.args.get('variety', default = {'$exists': True}, type = str)
+    region_1 = request.args.get('region_1', default = {'$exists': True}, type = str)
+    region_2 = request.args.get('region_2', default = {'$exists': True}, type = str)
+    province = request.args.get('province', default = {'$exists': True}, type = str)
+    winery = request.args.get('winery', default = {'$exists': True}, type = str)
+    results = list(col.find(filter={'country':country,'points':points, 'taster_name':taster_name, 'taster_twitter_handle':taster_twitter_handle, 'price':price, 'designation':designation, 'variety':variety, 'region_1':region_1, 'region_2':region_2, 'province':province, 'winery':winery}))
+    return results
+
 ##API
 host="0.0.0.0"
 api = Flask(import_name='mongo_api')
@@ -73,56 +99,13 @@ def distinct():
 
 @api.route('/mongodb/wine/wine_test/filter_len', methods=['GET']) #renvoie les documents correspondants aux critères sélectionnés
 def filter_len():
-    client = MongoClient(
-        host='mongodb',
-        port=27017,
-        username='data_user',
-        password='data_pwd',
-        authSource='wine'
-    )
-    db = client['wine']
-    col = db['wine_test']
-    country = request.args.get('country', default = {'$exists': True}, type = str)
-    points = request.args.get('points', default = {'$exists': True}, type = str)
-    taster_name = request.args.get('taster_name', default = {'$exists': True}, type = str)
-    price = request.args.get('price', default = {'$exists': True}, type = str)
-    designation = request.args.get('designation', default = {'$exists': True}, type = str)
-    variety = request.args.get('variety', default = {'$exists': True}, type = str)
-    region_1 = request.args.get('region_1', default = {'$exists': True}, type = str)
-    region_2 = request.args.get('region_2', default = {'$exists': True}, type = str)
-    province = request.args.get('province', default = {'$exists': True}, type = str)
-    winery = request.args.get('winery', default = {'$exists': True}, type = str)
-    results = list(col.find(filter={'country':country,'points':points, 'province':province, 'winery':winery}))
-    return make_response(jsonify({'query length':len(results)}),200)
+    res = results()
+    return make_response(jsonify({'query length':len(res)}),200)
 
 @api.route('/mongodb/wine/wine_test/filter', methods=['GET']) #renvoie les documents correspondants aux critères sélectionnés
 def filter():
-    client = MongoClient(
-        host='mongodb',
-        port=27017,
-        username='data_user',
-        password='data_pwd',
-        authSource='wine'
-    )
-    db = client['wine']
-    col = db['wine_test']
-    country = request.args.get('country', default = {'$exists': True}, type = str)
-    points = request.args.get('points', default = {'$exists': True}, type = str)
-    taster_name = request.args.get('taster_name', default = {'$exists': True}, type = str)
-    price = request.args.get('price', default = {'$exists': True}, type = str)
-    designation = request.args.get('designation', default = {'$exists': True}, type = str)
-    variety = request.args.get('variety', default = {'$exists': True}, type = str)
-    region_1 = request.args.get('region_1', default = {'$exists': True}, type = str)
-    region_2 = request.args.get('region_2', default = {'$exists': True}, type = str)
-    province = request.args.get('province', default = {'$exists': True}, type = str)
-    winery = request.args.get('winery', default = {'$exists': True}, type = str)
-    results = list(col.find(filter={'country':country,'points':points, 'province':province, 'winery':winery}))
-#    filtered_query = []
-    return make_response(jsonify({'query':str(results)}),200)
-#    for result in results:
-#        filtered_query.append(str(result))
-#    return make_response(jsonify({'filtered_query': str(filtered_query)}),200)
-
+    res = results()
+    return make_response(jsonify({'query':str(res)}),200)
 
 if __name__ == '__main__':
     api.run(host="0.0.0.0", port=5000)
